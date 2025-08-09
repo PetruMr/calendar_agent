@@ -1,3 +1,11 @@
+// /layout.tsx
+
+// Serve ad utilizzare il font Geist e Geist Mono
+// Importa i font da Google Fonts e li applica al layout globale
+
+// In quanto sono dei bei font, li lascio così come erano impostati inizialmente
+// da Next.js, con le variabili CSS per poterli usare in tutto il progetto
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -23,10 +31,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="it">
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {children}
       </body>
     </html>
