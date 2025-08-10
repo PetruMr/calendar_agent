@@ -8,6 +8,15 @@ import { hashPassword } from "@/lib/hash";
 import { signToken } from "@/lib/auth";
 import { JWT_TOKEN_COOKIE } from "@/lib/auth";
 
+
+// Gestisce la registrazione di un nuovo utente, creando un nuovo record nel database
+// Il body della richiesta deve contenere un JSON con i dati dell'utente:
+// {
+//     "username": "mario",
+//     "email": "prova@prova.it"
+//     "password" : "password123",
+//     "nome": "Mario Rossi"
+// }
 export async function POST(req: NextRequest) {
   try {
     const { username, email, password, nome } = await req.json();

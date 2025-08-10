@@ -6,10 +6,20 @@ Utilizzerò questo file al posto di un task manager come Trello o Jira, in quant
 
 ## Funzionalità da implementare
 
-- [ ] **Schermata di login e registrazione**
+- [x] **Schermata di login e registrazione**
 - [x] **Tabella per utenti**
-- [ ] **Middleware per JWT e autenticazione**
+- [x] **Middleware per JWT e autenticazione**
 - [x] **Collegamento account a Google Calendar**
-- [ ] **Vincolo che la mail collegata con google calendarè la stessa mail dell'account**
-- [ ] **Salvataggio OAuth token nel database e prova di utilizzo**
-- [ ] **Form di creazione call e invio mail ai partecipanti**
+- [x] **Salvataggio OAuth token nel database e prova di utilizzo**
+- [x] **Form di creazione call con validazione**
+- [ ] **Salvataggio call nel database**
+- [ ] **Gestione stato call (COLLECTING, REASONING, CONFIRMED, CANCELED)**
+- [ ] **Gestione disponibilità partecipanti**
+- [ ] **Invio email di richiesta disponibilità**
+- [ ] **Gestione risposte email con token univoco**
+- [ ] **Calcolo slot compatibili e selezione migliore**
+- [ ] **Invio email di conferma con link Meet e agenda**
+- [ ] **Gestione modifiche last-minute**
+- [ ] **Dashboard per visualizzare call in corso e storicizzate**
+- [ ] **Gestione errori e casi limite**
+- [ ] **Interfaccia con istruzioni chiare per l'utente**

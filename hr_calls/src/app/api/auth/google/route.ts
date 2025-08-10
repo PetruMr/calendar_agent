@@ -5,12 +5,13 @@
 import { NextResponse } from "next/server";
 import { getOAuthClient, SCOPES } from "@/lib/googleOAuthClient";
 
+// Reindirizza l'utente a Google per l'autenticazione
 export async function GET() {
   const oauth2 = getOAuthClient();
   const url = oauth2.generateAuthUrl({
     access_type: "offline",
     scope: SCOPES,
-    prompt: "consent", // ensures refresh_token on first grant
+    prompt: "consent", // richiede sempre il consenso per ottenere un refresh token
   });
   return NextResponse.redirect(url);
 }

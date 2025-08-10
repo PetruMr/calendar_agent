@@ -6,6 +6,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import useCheckLogged from "@/app/components/CheckLogged";
+
 // Semplice regex per validare le email
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
 
@@ -89,6 +91,9 @@ function Field({
 
 // Il componente principale della pagina di accesso/registrazione
 export default function AccessPage() {
+  // Per reindirizzare l'utente autenticato alla dashboard
+  const { isTokenLoading, loginStatus, userData } = useCheckLogged();
+
   // Stato per gestire il tipo di form (login o registrazione)
   const [mode, setMode] = useState<"login" | "register">("login");
   const [form, setForm] = useState({ username: "", email: "", password: "", nome: "" });
@@ -192,6 +197,24 @@ export default function AccessPage() {
     }
   };
 
+  useEffect(() => {
+    if (!isTokenLoading && loginStatus) {
+      router.replace("/dashboard");
+    }
+  }, [isTokenLoading, loginStatus, userData, router]);
+  
+  // Durante il caricamento, viene mostrata una schermata di caricamento
+  if (isTokenLoading) {
+    return (
+      <main className="min-h-screen grid place-items-center p-8">
+        <div className="flex flex-col items-center gap-4" role="status" aria-live="polite">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-300 border-t-transparent motion-reduce:animate-none" />
+          <p className="text-sm text-gray-500">Controllando la tua sessione...</p>
+          <span className="sr-only">Caricamento</span>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen w-full relative overflow-hidden">

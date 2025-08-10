@@ -3,6 +3,9 @@
 // Si occupa di richiedere il token di accesso, verificando che quindi l'utente sia autenticato, e manda 
 // i dati necessari al server per completare il processo di salvataggio del token OAuth
 
+// Questa pagina si poteva gestire anche come API, ma è stata creata una pagina in modo da poter mostrare
+// all'utente un messaggio dinamicamente in base a quello che è necessario
+
 
 "use client";
 
@@ -15,7 +18,6 @@ import useCheckLogged from "@/app/components/CheckLogged";
 //   const m = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
 //   return m ? decodeURIComponent(m[1]) : null;
 // }
-
 
 
 function GoogleCallbackPageInner() {

@@ -27,7 +27,7 @@ function Card(props: { title: string; children: React.ReactNode; className?: str
 // Queste sono le singole righe che compongono la dashboard, con i dettagli del profilo
 function Row({ label, value }: { label: string; value?: string | null }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border bg-white/60 px-3 py-2">
+    <div className="flex items-center justify-between rounded-xl border border-gray-300 bg-white/60 px-3 py-2">
       <span className="text-sm text-gray-400">{label}</span>
       <span className="text-sm font-medium text-gray-900">{value ?? "—"}</span>
     </div>

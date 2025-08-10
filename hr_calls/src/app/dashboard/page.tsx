@@ -10,7 +10,9 @@ import { useRouter } from "next/navigation";
 // Componenti creati per la dashboard
 
 // Componente per mostrare i dettagli del cliente e per collegare il suo account google calendar
-import DashboardClient from "./DashbordClient";
+import DashboardClient from "./DashboardClient";
+import DashboardCreateCall from "./DashboardCreateCall";
+import DashboardShowCalls from "./DashboardShowCalls";
 
 export default function DashboardPage() {
   // Hook per verificare lo stato di login dell'utente
@@ -97,6 +99,9 @@ export default function DashboardPage() {
             {/* Dashboard con i dati del cliente stesso, dal quale si può fare il collegamento a google calendar */}
             <DashboardClient {...userData} />
             
+            <DashboardCreateCall />
+
+            <DashboardShowCalls />
             
             <></>
         </div>

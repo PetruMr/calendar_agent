@@ -6,6 +6,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getOAuthClient } from "@/lib/googleOAuthClient";
 
+// Gestisce l'invio dei token OAuth2 di Google dopo che l'utente ha autorizzato l'app
+// Il body della richiesta deve contenere un JSON con il codice di autorizzazione e l'ID utente:
+// {
+//     "code": "authorization_code_from_google",
+//     "userId": "user_id_from_your_database"
+// }
+// Il codice di autorizzazione viene scambiato per i token di accesso e refresh
+// e questi vengono salvati nel database associati all'utente
 export async function POST(req: NextRequest) {
   try {
     const { code, userId } = await req.json();

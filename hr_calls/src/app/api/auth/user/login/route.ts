@@ -9,17 +9,22 @@ import { verifyPassword } from "@/lib/hash";
 import { signToken } from "@/lib/auth";
 import { JWT_TOKEN_COOKIE } from "@/lib/auth";
 
+// Gestisce il login dell'utente, verificando le credenziali ed impostando un cookie
+// Il body della richiesta deve contenere un JSON con le credenziali:
+// {
+//     "username": "mario",
+//     "password": "password123",
+// }
 export async function POST(req: NextRequest) {
   try {
-    const { username, email, password } = await req.json();
-    if ((!email && !username) || !password) {
+    const { username, password } = await req.json();
+    if (!username || !password) {
       return NextResponse.json({ error: "Non sono stati inseriti tutti i dati" }, { status: 400 });
     }
 
     // Prima si ricerca per email e poi per username
     let query = supabase.from("users").select("id, email, username, tipo, password, salt, nome").limit(1);
-    if (email) query = query.eq("email", email);
-    else query = query.eq("username", username);
+    query = query.eq("username", username);
 
     const { data: user, error } = await query.maybeSingle();
     if (error) throw error;

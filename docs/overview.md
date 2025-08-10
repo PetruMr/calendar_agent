@@ -31,7 +31,7 @@ Inoltre si considerano anche i requisiti tecnici specificati, ovvero:
         - Deadline entro cui la call deve avvenire
       - **Validazione form** delle informazioni inserite
       - **Invio form** attraverso richiesta HTTP POST al server
-      - **Salvataggio dei dati** nel database PostgreSQL tramite API RESTful in modo da mantenere uno storico delle richieste effettuate
+      - **Salvataggio dei dati** nel database PostgreSQL in modo da mantenere uno storico delle richieste effettuate
       - **Validazione** della richiesta inserita
         - Se non valida, invia una risposta 400 Bad Request con un messaggio di errore
         - Se valida, salva la richiesta con **COLLECTING** come stato iniziale e procede
@@ -40,9 +40,9 @@ Inoltre si considerano anche i requisiti tecnici specificati, ovvero:
     - Se i partecipanti hanno calendari collegati (OAuth Google/Outlook):
       - Lettura delle disponiblità (usando il fuso orario di ciascuno)
     - Altrimenti
-      - Invio **email personalizzata** con link a pagina di disponibilità (con **token univoco**, scadenza 8 ore)
+      - Invio **email personalizzata** con link a pagina di disponibilità (con **token univoco**)
       - La pagina permette di selezionare gli slot disponibili (UI con time-zone locale del partecipante)
-      - Oppure si può segnalare indiponibilità ed aggiungere delle note
+      - Oppure si può segnalare indiponibilità e pertanto annullare la call
       - Invia reminder se non riceve risposta entro 8 ore
     - L'angente unifica le disponibilità in **UTC**, applica filtri (orari, durata, ecc.) e aggiorna lo stato **REASONING**
 3. **Conferma appuntamento**:
@@ -57,8 +57,11 @@ Inoltre si considerano anche i requisiti tecnici specificati, ovvero:
         - Link dal quale poter salvare l'evento nel calendario dei partecipanti
         - Salva l'appuntamento nel sistema (log o dashboard)
         - Link dal quale poter modificare la propria disponibilità
+          - Per utenti con OAuth, il link fa sì che si apra il calendario dell'utente e si verifichino le disponibilità
+          - Per utenti senza OAuth, il link porta alla pagina di modifica disponibilità utilizzato precedentemente con il token univoco
     - Nel caso tutti hanno selezionato uno slot ma non c'è compatibilità, l'agente:
       - Invia email di notifica con richiesta di nuove disponibilità
+        - In questo caso l'agente aggiorna lo stato a **COLLECTING** e invia una nuova email di richiesta disponibilità
       - Aggiorna lo stato a **COLLECTING**
 4. **Gestione modifiche last-minute**:
     - Un partecipante può cambiare la propria disponibilità in qualsiasi momento:
@@ -85,6 +88,10 @@ Vi saranno quindi due parti fondamentali:
     - Partecipanti (nomi e/o email e a chi è arrivata la richiesta / chi ha confermato)
     - Tipo di call (screening/validazione/finale)
     - Dettagli della call (già confermata o ancora in attesa)
-    - Pulsante dal quale si può accedere alla pagina di gestione, dove si andrà a visualizzare lo stato della call e le azioni che si possono compiere, come per esempio "modifica disponibilità" oppure "annulla call".
     - Log con eventuali errori riscontrati durante il processo di scheduling
-  - [... Dettagli da definire in base alle necessità che emergeranno durante lo sviluppo ...]
+
+## Interfaccia utente partecipanti
+
+Per gli utenti partecipanti, essi entreranno utilizzando un token univoco ad una pagina dedicata.
+
+Da questa pagina potranno aggiungere le proprie disponibilità riguardanti la call. Potranno aggiungere un insieme di slot con data, ora e durata, oppure indicare di non essere disponibili e quindi annullare la call.
