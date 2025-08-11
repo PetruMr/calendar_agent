@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { JWT_TOKEN_COOKIE, verifyToken } from "@/lib/auth";
 
-import { agent_CallCreation_EntryPoint } from "@/lib/agent";
+import { agent_CallOrganizer_EntryPoint } from "@/lib/agent";
 
 // Se viene fatto il GET di questa route, ritorna tutte le call dell'utente di cui si ha il cookie JWT token.
 export async function GET(req: NextRequest) {
@@ -153,7 +153,7 @@ export async function GET(req: NextRequest) {
 //    - data_creazione (la data corrente)
 //    - data_call (la data che verrà decisa successivamente)
 //    - data_deadline (la data di deadline passata nel body)
-//    - stato_avanzamneto (default "processing", poi si aggiorna in "scheduled" quando la call viene programmata, infine, nel caso venga cancellata, in "cancelled")
+//    - stato_avanzamneto (default "processing", poi si aggiorna in "scheduled" quando la call viene programmata, infine, nel caso venga cancellata, in "cancelled". dopo la data di fine, passa a "ended")
 //    - tipo (il tipo di call passato nel body)
 //    - durata (la durata della call in minuti passata nel body)
 //    - note (le note della call, se presenti nel body)
@@ -161,7 +161,7 @@ export async function GET(req: NextRequest) {
 // 3. Si crea la relazione di partecipazione per ognuno degli utenti (nella tabella "users_calls" che ha due FK, una per _id utente ed una per _id call)
 //    in particolare, se l'utente ha google calendar collegato, ovvero in "users_oauth_tokens" ha un record con il proprio id, allora si segna "calendario" come true
 //    In caso contrario si segnala calendario come false e si creano i seguenti dati nel record di users_calls
-//    - stato (default "waiting", poi si aggiorna in "accepted" o "unavailable" o "declined" quando l'utente risponde)
+//    - stato (default "waiting", poi si aggiorna in "accepted" o "canceled" quando l'utente risponde)
 //    - token (un token univoco per ogni partecipante, generato da questa funzione, che serve per identificare l'utente
 //             quando deve inserire il tempo di disponibilità per la call nella pagina specifica)
 //    - created_at (data di creazione della relazione)
@@ -407,7 +407,7 @@ export async function POST(req: NextRequest) {
 
   const callId: string = insertedCall.id;
 
-   // --- STEP 3: relazione users_calls per tutti i partecipanti ---
+  // Generiamo ora la relazione users_calls per tutti i partecipanti 
   // Token univoci: leggi token già usati (non null) per evitare collisioni
   const { data: existingTokensData, error: tokErr } = await supabase
     .from("users_calls")
@@ -445,7 +445,7 @@ export async function POST(req: NextRequest) {
     user_id: string;
     call_id: string;
     calendario: boolean;
-    stato?: "waiting" | "accepted" | "unavailable" | "declined";
+    stato?: "waiting" | "accepted" | "canceled";
     token?: string | null;
     created_at?: string;
     lastmail_sent_at?: string | null;
@@ -461,6 +461,7 @@ export async function POST(req: NextRequest) {
         user_id: u.id,
         call_id: callId,
         calendario: true,
+        token: genUniqueToken()
       };
     }
     return {
@@ -509,7 +510,8 @@ export async function POST(req: NextRequest) {
   }
 
   // avvio asincrono dell'agent
-  // agent_CallCreation_EntryPoint(callId);
+  agent_CallOrganizer_EntryPoint(insertedCall.id)
+
 
   return NextResponse.json({
     ok: true,

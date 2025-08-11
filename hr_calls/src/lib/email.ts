@@ -11,12 +11,22 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendEmail(to: string, subject: string, body: string) {
+/**
+ * Questa funzione invia un'email utilizzando Nodemailer.
+ * Verrà fatto utilizzando l'account Gmail configurato nelle variabili d'ambiente.
+ * 
+ * @param to email del destinatario
+ * @param subject oggetto dell'email
+ * @param bodyHTML corpo dell'email in HTML
+ * @param bodyText corpo dell'email in testo semplice
+ */
+export async function sendEmail(to: string, subject: string, bodyHTML?: string, bodyText?: string) {
   const mailOptions = {
     from: `"StreetReports" <${process.env.MAIL_USER}>`,
     to,
     subject,
-    text: body,
+    html: bodyHTML || "",
+    text: bodyText || ""
   };
 
   try {

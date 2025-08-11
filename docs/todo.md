@@ -12,14 +12,14 @@ Utilizzerò questo file al posto di un task manager come Trello o Jira, in quant
 - [x] **Collegamento account a Google Calendar**
 - [x] **Salvataggio OAuth token nel database e prova di utilizzo**
 - [x] **Form di creazione call con validazione**
-- [ ] **Salvataggio call nel database**
-- [ ] **Gestione stato call (COLLECTING, REASONING, CONFIRMED, CANCELED)**
-- [ ] **Gestione disponibilità partecipanti**
-- [ ] **Invio email di richiesta disponibilità**
+- [x] **Salvataggio call nel database**
+- [x] **Gestione stato call (processing, canceled, scheduled, ended)**
+- [x] **Gestione disponibilità partecipanti**
+- [x] **Invio email di richiesta disponibilità**
 - [ ] **Gestione risposte email con token univoco**
 - [ ] **Calcolo slot compatibili e selezione migliore**
 - [ ] **Invio email di conferma con link Meet e agenda**
 - [ ] **Gestione modifiche last-minute**
-- [ ] **Dashboard per visualizzare call in corso e storicizzate**
+- [x] **Dashboard per visualizzare call in corso e storicizzate**
 - [ ] **Gestione errori e casi limite**
-- [ ] **Interfaccia con istruzioni chiare per l'utente**
+- [x] **Interfaccia con istruzioni chiare per l'utente**

@@ -223,7 +223,17 @@ export default function DashboardShowCalls() {
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="truncate text-sm font-semibold text-gray-900">{c.titolo}</h3>
                   <Chip className="border-gray-300 text-gray-700">{c.tipo}</Chip>
-                  <Chip className="border-blue-300 text-blue-700">{c.stato}</Chip>
+                  {c.stato === "canceled" ? (
+                    <Chip className="border-red-300 text-red-700">Cancellata</Chip>
+                  ) : c.stato === "processing" ? (
+                    <Chip className="border-yellow-300 text-yellow-700">In elaborazione</Chip>
+                  ) : c.stato === "scheduled" ? (
+                    <Chip className="border-green-300 text-green-700">Pianificata</Chip>
+                  ) : c.stato === "ended" ? (
+                    <Chip className="border-gray-300 text-gray-700">Conclusa</Chip>
+                  ) : (
+                    <Chip className="border-gray-300 text-gray-700">Stato sconosciuto</Chip>
+                  )}
                 </div>
                 <p className="mt-1 line-clamp-1 text-xs text-gray-600">
                   {c.dataCall ? `Programmato: ${formatDate(c.dataCall)}` : "Da pianificare"} · Durata: {formatMinutes(c.durata)} ·
@@ -299,7 +309,18 @@ export default function DashboardShowCalls() {
                               <p className="truncate text-xs text-gray-600">{p.email}</p>
                             </div>
                             <div className="flex items-center gap-2">
-                              {p.stato && <Chip className="border-indigo-300 text-indigo-700">{p.stato}</Chip>}
+                              {p.stato === "waiting" ? (
+                                <Chip className="border-yellow-300 text-yellow-700">In attesa di risposta</Chip>
+                              ) : p.stato === "unavailable" ? (
+                                <Chip className="border-red-300 text-orange-700">Non disponibile</Chip>
+                              ) : p.stato === "accepted" ? (
+                                <Chip className="border-green-300 text-green-700">Accettato</Chip>
+                              ) : p.stato === "canceled" ? (
+                                <Chip className="border-gray-300 text-red-700">Cancellato</Chip>
+                              ) : (
+                                <Chip className="border-gray-300 text-gray-700">Stato sconosciuto</Chip>
+                              )}
+
                               <Chip className="border-gray-300 text-gray-700">Conferma per mail</Chip>
                             </div>
                           </li>
