@@ -73,7 +73,7 @@ Inoltre si considerano anche i requisiti tecnici specificati, ovvero:
 
 ## Interfaccia utente recuiter
 
-Ogni recuiter ha accesso ad un interfaccia di login o registrazione.
+Ogni recuiter ha accesso ad un interfaccia di login (e registrazione nel nostro caso di testing)
 
 Dopo aver effettuato il login, si accede alla zona dove si possono organizzare le call oppure gestire quelle già organizzate.
 

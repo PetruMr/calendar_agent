@@ -27,22 +27,63 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Password deve avere almeno 8 caratteri" }, { status: 400 });
     }
 
-    // Controlla se l'email è già registrata
+    // Controlla se l'email è già registrata da un utente che non è "esterno"
     const { data: existing, error: findErr } = await supabase
       .from("users")
-      .select("id")
+      .select("id, tipo")
       .eq("email", email)
       .limit(1)
       .maybeSingle();
 
     if (findErr) throw findErr;
     if (existing) {
-      return NextResponse.json({ error: "Email già registrata" }, { status: 409 });
+      if( existing.tipo !== "esterno") {
+        return NextResponse.json({ error: "Email già registrata" }, { status: 409 });
+      }
     }
 
     const { salt, hash } = await hashPassword(password);
 
+    // Se il record esiste già, ma è esterno, lo aggiorniamo
+    if (existing) {
+      const { data: updated, error: updateErr } = await supabase
+        .from("users")
+        .update({
+          nome,
+          password: hash,
+          salt,
+          tipo: "recuiter",
+          username,
+        })
+        .eq("id", existing.id)
+        .select("id, email, username, tipo, nome")
+        .single();
 
+      if (updateErr) throw updateErr;
+
+      const token = signToken({
+        id: updated.id,
+        email: updated.email,
+        username: updated.username,
+        tipo: updated.tipo,
+        nome: updated.nome,
+      });
+
+      const res = NextResponse.json({ ok: true });
+      // Set HttpOnly JWT cookie
+      res.cookies.set(JWT_TOKEN_COOKIE, token, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+      });
+      return res;
+    }
+
+
+    // In caso contrario creiamo un nuovo record
+    // Inseriamo i dati dell'utente nel database
     const { data: inserted, error: insertErr } = await supabase
       .from("users")
       .insert({
@@ -50,7 +91,7 @@ export async function POST(req: NextRequest) {
         email,
         password: hash,
         salt,
-        tipo: "RECUITER",
+        tipo: "recuiter",
         username,
       })
       .select("id, email, username, tipo, nome")

@@ -81,17 +81,24 @@ create table public.calls (
 ) TABLESPACE pg_default;
 ```
 
-### 3. `participants`
+### 3. `users_calls`
 
-Infine questa tabella conterrà le informazioni sui partecipanti alle chiamate, collegandoli agli utenti e alle chiamate.
+Questa tabella rappresenta la relazione tra gli utenti e le chiamate, permettendo di associare più utenti a più chiamate.
 
 ```sql
-create table public.participants (
+create table public.users_calls (
   call_id bigint not null,
   user_id bigint not null,
-  stato text not null,
+  calendario boolean not null default false,
+  stato text null,
+  token text null,
+  created_at timestamp with time zone null default now(),
+  lastmail_sent_at timestamp with time zone null,
+  mails_sent bigint null default '0'::bigint,
   constraint participants_pkey primary key (call_id, user_id),
   constraint participants_call_id_fkey foreign KEY (call_id) references calls (id) on update CASCADE on delete CASCADE,
   constraint participants_user_id_fkey foreign KEY (user_id) references users (id) on update CASCADE on delete CASCADE
 ) TABLESPACE pg_default;
 ```
+
+Definisce diversi dati utili che servono in particolar modo a chi non ha collegato il proprio account a Google Calendar:

@@ -22,8 +22,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Non sono stati inseriti tutti i dati" }, { status: 400 });
     }
 
-    // Prima si ricerca per email e poi per username
-    let query = supabase.from("users").select("id, email, username, tipo, password, salt, nome").limit(1);
+    // Ricerco l'utente e verifico che sia di tipo diverso da "esterno"
+    let query = supabase.from("users").select("id, email, username, tipo, password, salt, nome").neq(
+      "tipo", "esterno"
+    ).limit(1);
     query = query.eq("username", username);
 
     const { data: user, error } = await query.maybeSingle();

@@ -349,7 +349,7 @@ export default function AccessPage() {
               </span>
             </button>
 
-            <p className="pt-1 text-center text-xs text-gray-500">Continuando accetti le <a className="text-blue-500" href="conditions">condizioni d&#39uso</a></p>
+            <p className="pt-1 text-center text-xs text-gray-500">Continuando accetti le <a className="text-blue-500" href="conditions">condizioni d&rsquo;uso</a></p>
           </form>
         </div>
       </section>

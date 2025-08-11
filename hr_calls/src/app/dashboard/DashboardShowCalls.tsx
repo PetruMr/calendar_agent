@@ -75,8 +75,8 @@ function AccordionItem({
 export type ApiUser = {
   nome: string;
   email: string;
-  calendar?: boolean | null; // true (utente registrato con Calendar), false (partecipante esterno), null/undefined se indeterminato
-  status?: string | null; // es. "waiting" per gli esterni
+  calendar: boolean | null; // true (utente registrato con Calendar), false (partecipante esterno), null/undefined se indeterminato
+  stato?: string | null; // es. "waiting" per gli esterni
 };
 
 // Il tipo di chiamata che viene passato alla dashboard dopo aver richiesto l'elenco di tutte le calls
@@ -89,7 +89,7 @@ export type ApiCall = {
   durata?: number | null; // minuti
   deadline?: string | null; // ISO
   created_at?: string | null; // ISO
-  user?: ApiUser[]; // insieme di utenti registrati (calendar=true) + partecipanti esterni (calendar=false)
+  users?: ApiUser[]; // insieme di utenti registrati (calendar=true) + partecipanti esterni (calendar=false)
 };
 
 
@@ -109,7 +109,7 @@ export type UICall = {
 };
 
 function normalizeCall(c: ApiCall, idx: number): UICall {
-  const users = c.user ?? [];
+  const users = c.users ?? [];
   const registeredUsers = users.filter((u) => u.calendar === true);
   const externalParticipants = users.filter((u) => u.calendar === false);
 
@@ -169,9 +169,11 @@ export default function DashboardShowCalls() {
         const j = await res.json().catch(() => null);
         if (res.status === 401) throw new Error("Non sei autenticato. Effettua l'accesso per vedere le tue call.");
         throw new Error(j?.error || `Errore nel recupero delle call (${res.status}).`);
-      }
+      };
       const data = (await res.json()) as { ok: boolean; calls: ApiCall[] };
+      console.log(data)
       const list = (data?.calls || []).map(normalizeCall);
+      console.log(list)
       setCalls(list);
     } catch (err: any) {
       setError(err?.message || "Errore imprevisto durante il caricamento.");
@@ -297,7 +299,7 @@ export default function DashboardShowCalls() {
                               <p className="truncate text-xs text-gray-600">{p.email}</p>
                             </div>
                             <div className="flex items-center gap-2">
-                              {p.status && <Chip className="border-indigo-300 text-indigo-700">{p.status}</Chip>}
+                              {p.stato && <Chip className="border-indigo-300 text-indigo-700">{p.stato}</Chip>}
                               <Chip className="border-gray-300 text-gray-700">Conferma per mail</Chip>
                             </div>
                           </li>
