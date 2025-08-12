@@ -65,12 +65,26 @@ function toISOFromLocal(dtLocal: string) {
 
 
 // Componente per la creazione 
-export default function DashboardCreateCall() {
+export default function DashboardCreateCall(
+  userData?: {
+    _id?: string | null;
+    username?: string | null;
+    nome?: string | null;
+    email?: string | null;
+    tipo?: string | null;
+    googleCalendarLinked?: boolean | null; // true, false o null (problema di rete)
+} | null) {
   // Stato form
   const [partecipanti, setPartecipanti] = useState<Participant[]>([{ nome: "", email: "" }]);
   const [tipo, setTipo] = useState<CallType>("screening");
   const [durata, setDurata] = useState<CallDuration>(30);
-  const [deadlineLocal, setDeadlineLocal] = useState<string>("");
+  // Impostata la deadline in automatico a tra 5 giorni alle 20
+  const [deadlineLocal, setDeadlineLocal] = useState<string>(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 5);
+    d.setHours(20, 0, 0, 0); // Imposta alle 8:00
+    return d.toISOString().slice(0, 16); // Ritorna in formato YYYY-MM-DDTHH:mm
+  });
   const [note, setNote] = useState<string>("");
   const [titolo, setTitolo] = useState<string>("");
 
@@ -104,12 +118,16 @@ export default function DashboardCreateCall() {
     const e: Record<string, string> = {};
 
     if (!partecipanti.length) e["partecipanti"] = "Aggiungi almeno un partecipante.";
+    console.log("Sono qui!");
 
     // Regole base su ogni partecipante
     partecipanti.forEach((p, idx) => {
       if (!p.nome.trim()) e[`partecipanti.${idx}.nome`] = "Il nome è obbligatorio.";
       if (!p.email.trim()) e[`partecipanti.${idx}.email`] = "L'email è obbligatoria.";
       else if (!isEmail(p.email)) e[`partecipanti.${idx}.email`] = "Formato email non valido.";
+      if (p.email === userData?.email) {
+        e[`partecipanti.${idx}.email`] = "Non puoi aggiungere te stesso come partecipante.";
+      }
     });
 
     // Controllo email duplicate (case-insensitive, spazi ignorati)
@@ -131,7 +149,12 @@ export default function DashboardCreateCall() {
       const now = new Date();
       if (isNaN(deadline.getTime())) e["deadline"] = "Deadline non valida.";
       else if (deadline <= now) e["deadline"] = "La deadline deve essere futura.";
+      // Controlla che sia entro 14 giorni
+      else if (deadline > new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000)) {
+        e["deadline"] = "La deadline non può superare i 14 giorni da ora.";
+      }
     }
+
 
     // Regole su tipo e durata, che devono appartenere a dei set predefiniti
     if (!([30, 45, 60] as number[]).includes(durata)) e["durata"] = "Durata non valida.";
@@ -184,7 +207,12 @@ export default function DashboardCreateCall() {
             setPartecipanti([{ nome: "", email: "" }]);
             setTipo("screening");
             setDurata(30);
-            setDeadlineLocal("");
+            setDeadlineLocal(() => {
+                const d = new Date();
+                d.setDate(d.getDate() + 5);
+                d.setHours(20, 0, 0, 0); // Imposta alle 8:00
+                return d.toISOString().slice(0, 16); // Ritorna in formato YYYY-MM-DDTHH:mm
+            });
             setNote("");
             setErrors({});
             setTitolo("");
@@ -341,7 +369,12 @@ export default function DashboardCreateCall() {
               setPartecipanti([{ nome: "", email: "" }]);
               setTipo("screening");
               setDurata(30);
-              setDeadlineLocal("");
+              setDeadlineLocal(() => {
+                const d = new Date();
+                d.setDate(d.getDate() + 5);
+                d.setHours(20, 0, 0, 0); // Imposta alle 8:00
+                return d.toISOString().slice(0, 16); // Ritorna in formato YYYY-MM-DDTHH:mm
+              });
               setErrors({});
               setMessage(null);
             }}

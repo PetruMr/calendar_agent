@@ -88,6 +88,7 @@ export type ApiCall = {
   data_call?: string | null; // ISO, potrebbe mancare
   durata?: number | null; // minuti
   deadline?: string | null; // ISO
+  link_meet?: string; // link al meeting, se disponibile
   created_at?: string | null; // ISO
   users?: ApiUser[]; // insieme di utenti registrati (calendar=true) + partecipanti esterni (calendar=false)
 };
@@ -103,6 +104,7 @@ export type UICall = {
   dataCall?: string | null;
   durata?: number | null;
   deadline?: string | null;
+  link_meet?: string; // link al meeting, se disponibile
   createdAt?: string | null;
   registeredUsers: ApiUser[];
   externalParticipants: ApiUser[]; // Che hanno calendar=false e quindi contengono uno status
@@ -122,6 +124,7 @@ function normalizeCall(c: ApiCall, idx: number): UICall {
     dataCall: c.data_call ?? null,
     durata: c.durata ?? null,
     deadline: c.deadline ?? null,
+    link_meet: c.link_meet || "",
     createdAt: c.created_at ?? null,
     registeredUsers,
     externalParticipants,
@@ -243,6 +246,24 @@ export default function DashboardShowCalls() {
               <div className="flex flex-wrap items-center gap-2 text-xs text-gray-600">
                 <Chip className="border-gray-300 text-gray-700">Partecipanti: {participantsCount}</Chip>
                 {c.createdAt && <span className="text-[11px]">Creato il {formatDate(c.createdAt)}</span>}
+                {c.link_meet && (
+                  <a
+                    href={c.link_meet}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 text-blue-600 hover:underline"
+                  >
+                    <svg
+                      className="h-4 w-4"
+                      viewBox="0 0 24 24"
+                      fill="currentColor"
+                      aria-hidden="true"
+                    >
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5.5 14.5h-1v1h1v-1zm0-3h-1v2h1v-2zm0-3h-1v2h1V10.5zM7.5 8H6v8h1.5V8zm3.5 0H9v8h2V8zm3.5 0H12v8h2V8z" />
+                    </svg>
+                    Link al meeting
+                  </a>
+                )}
               </div>
             </div>
           );
@@ -269,6 +290,22 @@ export default function DashboardShowCalls() {
 
                       <dt className="col-span-1 text-xs text-gray-500">Deadline</dt>
                       <dd className="col-span-2">{formatDate(c.deadline)}</dd>
+
+                      { c.link_meet && (
+                        <>
+                          <dt className="col-span-1 text-xs text-gray-500">Link al meeting</dt>
+                          <dd className="col-span-2">
+                            <a
+                              href={c.link_meet}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline"
+                            >
+                              {c.link_meet}
+                            </a>
+                          </dd>
+                        </>
+                      )}
                     </dl>
                   </div>
                 </div>

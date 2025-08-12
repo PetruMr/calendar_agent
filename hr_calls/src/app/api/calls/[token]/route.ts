@@ -169,7 +169,8 @@ async function getCurrentUser(userId: number): Promise<Users | null> {
 // Ritorna i dettagli della call + disponibilita_consigliate + disponibilità dell'utente + utenti e il loro stato
 export async function GET(_req: NextRequest, { params }: { params: { token: string } }) {
   try {
-    const token = await params?.token;
+    const usedParams = await params;
+    const token = await usedParams?.token;
     if (!token) return json({ error: "Token mancante" }, { status: 400 });
 
     const uc = await getUserCallByToken(token);
@@ -223,7 +224,8 @@ export async function GET(_req: NextRequest, { params }: { params: { token: stri
 // Dopo l'inserimento marca users_calls.stato = 'accepted'
 export async function PUT(req: NextRequest, { params }: { params: { token: string } }) {
   try {
-    const token = await params?.token;
+    const usedParams = await params;
+    const token = await usedParams?.token;
     if (!token) return json({ error: "Token mancante" }, { status: 400 });
 
     const uc = await getUserCallByToken(token);
@@ -306,7 +308,8 @@ export async function PUT(req: NextRequest, { params }: { params: { token: strin
 // Questa funzione sarà idempotente per sicurezza, cioè se già cancellata/terminata risponde comunque 200
 export async function DELETE(_req: NextRequest, { params }: { params: { token: string } }) {
   try {
-    const token = await params?.token;
+    const usedParams = await params;
+    const token = await usedParams?.token;
     if (!token) return json({ error: "Token mancante" }, { status: 400 });
 
     const uc = await getUserCallByToken(token);
@@ -355,7 +358,8 @@ export async function DELETE(_req: NextRequest, { params }: { params: { token: s
 // Se l'utente non ha il calendario collegato, cancella le disponibilità già inviate
 export async function PATCH(req: NextRequest, { params }: { params: { token: string } }) {
   try {
-    const token = await params?.token;
+    const usedParams = await params;
+    const token = await usedParams?.token;
     if (!token) return json({ error: "Token mancante" }, { status: 400 });
 
     // Trova mapping utente<->call
@@ -366,10 +370,15 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
     const call = await getCall(uc.call_id);
     if (!call) return json({ error: "Chiamata non trovata" }, { status: 404 });
 
-    // Se la call è già cancellata, non fare nulla
-    if ((call.stato_avanzamento || "").toLowerCase() === "canceled") {
+    // Se la call è già cancellata o terminata, non fare nulla
+    if ((call.stato_avanzamento || "").toLowerCase() === "canceled" || (call.stato_avanzamento || "").toLowerCase() === "ended") {
       return json({ ok: true, skipped: true, reason: "call_canceled" }, { status: 200 });
     }
+
+    // Se invece la call è già partita (quindi in stato scheduled e con data_call impostata ad un tempo passato ad ora)
+    if ((call.stato_avanzamento || "").toLowerCase() === "scheduled" && call.data_call && new Date(call.data_call) < new Date()) {
+      return json({ ok: true, skipped: true, reason: "call_already_started" }, { status: 200 });
+    } 
 
     // Prendi info utente nella relazione per capire se ha il calendario collegato
     const { data: ucRow, error: ucRowErr } = await supabase
@@ -383,10 +392,17 @@ export async function PATCH(req: NextRequest, { params }: { params: { token: str
     const calendario = !!ucRow?.calendario;
 
     // Reimposta lo stato della call a "processing"
+    // Cancella anche data_call ed il link_meet
     const { error: upCallErr } = await supabase
       .from("calls")
-      .update({ stato_avanzamento: "processing" })
+      .update({
+        stato_avanzamento: "processing",
+        data_call: null,
+        link_meet: null,
+      })
       .eq("id", uc.call_id);
+
+
 
     if (upCallErr) throw upCallErr;
 

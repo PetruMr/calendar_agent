@@ -16,10 +16,10 @@ Utilizzerò questo file al posto di un task manager come Trello o Jira, in quant
 - [x] **Gestione stato call (processing, canceled, scheduled, ended)**
 - [x] **Gestione disponibilità partecipanti**
 - [x] **Invio email di richiesta disponibilità**
-- [ ] **Gestione risposte email con token univoco**
-- [ ] **Calcolo slot compatibili e selezione migliore**
-- [ ] **Invio email di conferma con link Meet e agenda**
-- [ ] **Gestione modifiche last-minute**
+- [x] **Gestione risposte email con token univoco**
+- [x] **Calcolo slot compatibili e selezione migliore**
+- [x] **Invio email di conferma con link Meet e agenda**
+- [x] **Gestione modifiche last-minute**
 - [x] **Dashboard per visualizzare call in corso e storicizzate**
-- [ ] **Gestione errori e casi limite**
+- [x] **Gestione errori e casi limite**
 - [x] **Interfaccia con istruzioni chiare per l'utente**

@@ -84,6 +84,7 @@ export async function GET(req: NextRequest) {
         stato_avanzamento,
         data_call,
         durata,
+        link_meet,
         data_deadline,
         data_creazione,
         users_calls (
@@ -114,6 +115,7 @@ export async function GET(req: NextRequest) {
     stato_avanzamento: call.stato_avanzamento,
     data_call: call.data_call ?? null,
     durata: call.durata,
+    link_meet: call.link_meet ?? "",
     deadline: call.data_deadline,
     created_at: call.data_creazione,
     users: (call.users_calls ?? []).map((uc: any) => ({
@@ -249,6 +251,13 @@ export async function POST(req: NextRequest) {
     errors.deadline = "Deadline non valida.";
   } else if (deadline <= new Date()) {
     errors.deadline = "La deadline deve essere futura.";
+  }
+
+  // Controlla inoltre se la deadline è entro 14 giorni
+  const maxDeadline = new Date();
+  maxDeadline.setDate(maxDeadline.getDate() + 14);
+  if (deadline > maxDeadline) {
+    errors.deadline = "La deadline non può essere oltre 14 giorni.";
   }
 
   if (body.note && body.note.length > 500) {

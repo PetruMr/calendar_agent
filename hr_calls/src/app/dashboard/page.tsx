@@ -99,7 +99,7 @@ export default function DashboardPage() {
             {/* Dashboard con i dati del cliente stesso, dal quale si può fare il collegamento a google calendar */}
             <DashboardClient {...userData} />
             
-            <DashboardCreateCall />
+            <DashboardCreateCall {...userData} />
 
             <DashboardShowCalls />
             

@@ -14,8 +14,8 @@ create table public.users (
   nome text not null,
   email text not null,
   password text null,
-  salt text not null,
-  tipo text null,
+  salt text null,
+  tipo text not null default 'esterno'::text,
   username text null,
   constraint users_pkey primary key (id),
   constraint users_email_key unique (email)
@@ -25,41 +25,25 @@ create table public.users (
 Vi sarà poi la tabella `user_oauth_tokens` per gestire i token OAuth degli utenti:
 
 ```sql
-create table if not exists public.user_oauth_tokens (
-  id bigserial primary key,
-  user_id bigint not null, 
+create table public.user_oauth_tokens (
+  id bigserial not null,
+  user_id bigint null,
   provider text not null,
-  access_token text,
-  refresh_token text,
-  scope text,
-  token_type text,
-  expiry_date bigint,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now(),
-  unique (user_id, provider)
-);
+  access_token text null,
+  refresh_token text null,
+  scope text null,
+  token_type text null,
+  expiry_date bigint null,
+  created_at timestamp with time zone not null default now(),
+  updated_at timestamp with time zone not null default now(),
+  constraint user_oauth_tokens_pkey primary key (id),
+  constraint user_oauth_tokens_user_id_provider_key unique (user_id, provider),
+  constraint user_oauth_tokens_user_id_fkey foreign KEY (user_id) references users (id) on update CASCADE on delete CASCADE
+) TABLESPACE pg_default;
 
--- Questi trigger sono placeholder, da capire se ha senso usarli o magari è meglio ometterli e gestire l'aggiornamento di `updated_at` a livello applicativo
-
--- updated_at trigger in modo da aggiornare il campo ad ogni modifica
-create or replace function public.set_updated_at() 
-returns trigger language plpgsql as $$
-begin 
-  new.updated_at = now(); 
-  return new; 
-end; $$;
-
-drop trigger if exists trg_user_oauth_tokens_updated on public.user_oauth_tokens;
-
--- Creiamo il trigger che aggiorna updated_at ad ogni modifica
-create trigger trg_user_oauth_tokens_updated
-before update on public.user_oauth_tokens
-for each row
-execute function public.set_updated_at();
-
--- Abilitiamo la Row Level Security per questa tabella e impostiamo una policy di default che nega l'accesso a tutti gli utenti
-alter table public.user_oauth_tokens enable row level security;
-create policy "deny all" on public.user_oauth_tokens for all using (false);
+create trigger trg_user_oauth_tokens_updated BEFORE
+update on user_oauth_tokens for EACH row
+execute FUNCTION set_updated_at ();
 ```
 
 ### 2. `calls`
@@ -77,6 +61,7 @@ create table public.calls (
   durata bigint null,
   note text null,
   link_meet text null,
+  titolo text null,
   constraint calls_pkey primary key (id)
 ) TABLESPACE pg_default;
 ```
@@ -102,3 +87,24 @@ create table public.users_calls (
 ```
 
 Definisce diversi dati utili che servono in particolar modo a chi non ha collegato il proprio account a Google Calendar:
+
+### `disponibilita`
+
+Infine abbiamo le disponibilità che vengono date da chi partecipa alla chiamata e che non hanno un account Google Calendar collegato.
+
+```sql
+create table public.users_calls (
+  call_id bigint not null,
+  user_id bigint not null,
+  calendario boolean not null default false,
+  stato text null,
+  token text null,
+  created_at timestamp with time zone null default now(),
+  lastmail_sent_at timestamp with time zone null,
+  mails_sent bigint null default '0'::bigint,
+  constraint participants_pkey primary key (call_id, user_id),
+  constraint participants_call_id_fkey foreign KEY (call_id) references calls (id) on update CASCADE on delete CASCADE,
+  constraint participants_user_id_fkey foreign KEY (user_id) references users (id) on update CASCADE on delete CASCADE
+) TABLESPACE pg_default;
+```
+

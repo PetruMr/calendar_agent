@@ -95,3 +95,33 @@ Vi saranno quindi due parti fondamentali:
 Per gli utenti partecipanti, essi entreranno utilizzando un token univoco ad una pagina dedicata.
 
 Da questa pagina potranno aggiungere le proprie disponibilità riguardanti la call. Potranno aggiungere un insieme di slot con data, ora e durata, oppure indicare di non essere disponibili e quindi annullare la call.
+
+
+## NOTE PROGETTUALI FINALI - Su Google Meet
+
+Per questo progetto, la parte riguardanti al link di Google Meet è un po' un problema:
+- Per generare un link di meet da mandare a tutti, devo avere un account Google con OAuth 2.0 configurato
+  - Se collego questo profilo, e il profilo NON è un profilo Google Workspace, non posso modificare i permessi di accesso al link Meet
+- Invece potrei non generarlo in generale e mandare solo l'evento che si può creare su calendario, dal quale si possono invitare le altre persone
+  - Questa opzione va in contrasto con le richieste funzionali del progetto, pertanto non è stata presa in considerazione la sua implementazion
+
+Essenzialmente, se si dovesse rilasciare effettivamente, bisognerebbe o andare a generare un account Google Workspace per il bot, oppure non generare il link Meet e mandare solo l'evento di calendario.
+
+A scopo dimostrativo abbiamo scelto di mandarli entrambi.
+
+Per il profilo BOT si andrà a creare un account di Google, nel nostro caso "streetreport.app@gmail.com", un account che avevo precedentemente usato per un altro progetto.
+Utilizzando questo profilo si dovrà andare sulla pagina "/api/agent/auth/\[token\]" dove il token è una variabile di ambiente del server nota unicamente agli amministratori. Dando i permessi al profilo di google, si predispone un token OAuth che potrà essere utilizzato per generare i link Meet e gli eventi di calendario.
+
+D'altro canto questo vuol dire che dovrà venire manualmente configurato e ogni tanto aggiornato (in produzione ogni 6 mesi circa), quindi questo processo sarebbe da automatizzare.
+
+## NOTE PROGETTUALI FINALI - Su Agent
+
+L'agent è una funzione che viene eseguita periodicamente, la quale controlla tutte le chiamate che sono nel DB e cerca quelle che deve gestire.
+
+Per eseguire questo tipo di funzione, in un normale server, utilizzeremmo un cron job. Tuttavia Vercel permette l'uso di soli 2 cron job che avvengono una volta al giorno, pertanto per avere una migliore interattività con il sito, esso utilizzerà altri metodi.
+
+Il metodo trovato è stato quello di aprire una porta, la quale sarà "/api/agent/" alla quale si dovrà fare una richiesta di tipo POST con un Bearer Token che sarà una variabile di ambiente del server.
+Solo amministratori potranno fare questa chiamata.
+
+Si delega la responsabilità periodica, quindi, di eseguire tale chiamata, a un servizio esterno, chiamato "UPstash" che attraverso il QStash permette di eseguire fino a 500 chiamate HTTPS al giorno.
+Questo fa sì che ci possano essere update ogni 5 minuti, durante tutto il giorno.

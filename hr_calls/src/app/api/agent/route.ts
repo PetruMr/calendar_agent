@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
     const allCalls = await supabase
       .from("calls")
       .select("id, stato_avanzamento")
-      .not("stato_avanzamento", "in", ["canceled", "ended"])
+      .not("stato_avanzamento", "in", "(canceled,ended)")
     if (allCalls.error) return NextResponse.json({ error: allCalls.error.message }, { status: 500 });
 
     if (allCalls.data.length === 0) {
@@ -40,11 +40,40 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true });
     }
 
+    // Se una chiamata è in stato "scheduled" e la data_call è passata, allora impostiamo lo stato a "ended" e la ignoriamo
+    for (const call of allCalls.data) {
+      if (call.stato_avanzamento.toLowerCase() === "scheduled") {
+        const callDetails = await supabase
+          .from("calls")
+          .select("data_call")
+          .eq("id", call.id)
+          .single();
+        
+        if (callDetails.error) {
+          return NextResponse.json({ error: callDetails.error.message }, { status: 500 });
+        }
+
+        if (callDetails.data.data_call && new Date(callDetails.data.data_call) < new Date()) {
+          // Aggiorna lo stato della chiamata a "ended"
+          await supabase
+            .from("calls")
+            .update({ stato_avanzamento: "ended" })
+            .eq("id", call.id);
+        }
+      }
+    }
+
     // Per ogni call eseguiamo l'agente
     for (const call of allCalls.data) {
       const callId = call.id;
       // Avvia l'agente per organizzare la chiamata
-      await agent_CallOrganizer_EntryPoint(callId);
+      try {
+        await agent_CallOrganizer_EntryPoint(callId);
+      } catch (e) {
+        console.error(`Errore durante l'elaborazione della chiamata ${callId}:`, e);
+        // Se c'è un errore, possiamo decidere se continuare o interrompere
+        // In questo caso, continueremo con le altre chiamate
+      }
     }
 
     // Ritorna una risposta positiva
