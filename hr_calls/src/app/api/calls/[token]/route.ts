@@ -167,7 +167,7 @@ async function getCurrentUser(userId: number): Promise<Users | null> {
 
 // GET /calls/[token]
 // Ritorna i dettagli della call + disponibilita_consigliate + disponibilità dell'utente + utenti e il loro stato
-export async function GET(_req: NextRequest, { params }: { params: { token: string } }) {
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   try {
     const usedParams = await params;
     const token = await usedParams?.token;
@@ -222,7 +222,7 @@ export async function GET(_req: NextRequest, { params }: { params: { token: stri
 // Regole minime includo avere almeno 1 disponibilità e almeno una con inizio < deadline (se presente)
 // Una volta inviate non si possono modificare o aggiungerne altre
 // Dopo l'inserimento marca users_calls.stato = 'accepted'
-export async function PUT(req: NextRequest, { params }: { params: { token: string } }) {
+export async function PUT(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   try {
     const usedParams = await params;
     const token = await usedParams?.token;
@@ -306,7 +306,7 @@ export async function PUT(req: NextRequest, { params }: { params: { token: strin
 // Cancella l'intera chiamata associata al token
 // Marca l'utente che ha il token come "canceled" nella tabella users_calls
 // Questa funzione sarà idempotente per sicurezza, cioè se già cancellata/terminata risponde comunque 200
-export async function DELETE(_req: NextRequest, { params }: { params: { token: string } }) {
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   try {
     const usedParams = await params;
     const token = await usedParams?.token;
@@ -356,7 +356,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: { token: s
 // PATCH /calls/[token]
 // Permette di reimpostare lo stato della call a "processing" e lo stato del partecipante a "waiting"
 // Se l'utente non ha il calendario collegato, cancella le disponibilità già inviate
-export async function PATCH(req: NextRequest, { params }: { params: { token: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   try {
     const usedParams = await params;
     const token = await usedParams?.token;
