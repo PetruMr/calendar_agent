@@ -1,5 +1,11 @@
 # **Agente AI – Organizzazione automatica di videoconferenze**
 
+## Dove trovare e come provare
+
+Questa applicazione è disponibile al seguente link: [https://calendar-agent-gamma.vercel.app/](https://calendar-agent-gamma.vercel.app/).
+
+Se volete utilizzarlo e fare delle prove utilizzando anche il vostro google calendar, vi posso aggiungere alla parte di testing: contattetemi su **"streetreports.app@gmail.com"**.
+
 ## Obiettivo
 Sviluppare un agente AI per automatizzare la pianificazione delle call tra recruiter, candidati e Mastro Expert, senza interventi manuali.
 
