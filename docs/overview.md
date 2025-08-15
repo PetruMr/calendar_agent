@@ -110,7 +110,7 @@ Essenzialmente, se si dovesse rilasciare effettivamente, bisognerebbe o andare a
 A scopo dimostrativo abbiamo scelto di mandarli entrambi.
 
 Per il profilo BOT si andrà a creare un account di Google, nel nostro caso "streetreport.app@gmail.com", un account che avevo precedentemente usato per un altro progetto.
-Utilizzando questo profilo si dovrà andare sulla pagina "/api/agent/auth/\[token\]" dove il token è una variabile di ambiente del server nota unicamente agli amministratori. Dando i permessi al profilo di google, si predispone un token OAuth che potrà essere utilizzato per generare i link Meet e gli eventi di calendario.
+Utilizzando questo profilo si dovrà andare sulla pagina "/api/agent/meet/auth/\[token\]" dove il token è una variabile di ambiente del server nota unicamente agli amministratori. Dando i permessi al profilo di google, si predispone un token OAuth che potrà essere utilizzato per generare i link Meet e gli eventi di calendario.
 
 D'altro canto questo vuol dire che dovrà venire manualmente configurato e ogni tanto aggiornato (in produzione ogni 6 mesi circa), quindi questo processo sarebbe da automatizzare.
 

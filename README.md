@@ -6,6 +6,11 @@ Questa applicazione è disponibile al seguente link: [https://calendar-agent-gam
 
 Se volete utilizzarlo e fare delle prove utilizzando anche il vostro google calendar, vi posso aggiungere alla parte di testing: contattetemi su **"streetreports.app@gmail.com"**.
 
+
+---
+
+In seguito trovere quelle che sono state le richieste funzionali e alcuni dei vincoli che sono stati posti per la realizzazione di questo progetto.
+
 ## Obiettivo
 Sviluppare un agente AI per automatizzare la pianificazione delle call tra recruiter, candidati e Mastro Expert, senza interventi manuali.
 
