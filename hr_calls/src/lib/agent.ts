@@ -374,15 +374,15 @@ async function agent_sendAvailabilityEmail(
     }"**.
 
     Dettagli:
-    - Creata il: ${new Date(callData.data_creazione).toLocaleString()}
+    - Creata il: ${new Date(callData.data_creazione).toLocaleString()} (UTC)
     - Data chiamata: ${
       callData.data_call
-        ? new Date(callData.data_call).toLocaleString()
+        ? (new Date(callData.data_call).toLocaleString() + "(UTC)")
         : "Non ancora programmata"
-    }
+    } 
     - Scadenza risposta: ${
       callData.data_deadline
-        ? new Date(callData.data_deadline).toLocaleString()
+        ? (new Date(callData.data_deadline).toLocaleString() + "(UTC)")
         : "N/A"
     }
     - Durata prevista: ${callData.durata} minuti
@@ -418,13 +418,13 @@ async function agent_sendAvailabilityEmail(
               <td style="padding: 6px 0; color: #6b7280; width: 40%;">Creata il:</td>
               <td style="padding: 6px 0; color: #111827;">${new Date(
                 callData.data_creazione
-              ).toLocaleString()}</td>
+              ).toLocaleString()} (UTC)</td>
             </tr>
             <tr>
               <td style="padding: 6px 0; color: #6b7280;">Data chiamata:</td>
               <td style="padding: 6px 0; color: #111827;">${
                 callData.data_call
-                  ? new Date(callData.data_call).toLocaleString()
+                  ? (new Date(callData.data_call).toLocaleString() + "(UTC)")
                   : "Non ancora programmata"
               }</td>
             </tr>
@@ -432,7 +432,7 @@ async function agent_sendAvailabilityEmail(
               <td style="padding: 6px 0; color: #6b7280;">Scadenza risposta:</td>
               <td style="padding: 6px 0; color: #111827;">${
                 callData.data_deadline
-                  ? new Date(callData.data_deadline).toLocaleString()
+                  ? (new Date(callData.data_deadline).toLocaleString() + "(UTC)")
                   : "N/A"
               }</td>
             </tr>
@@ -1483,6 +1483,7 @@ Vi invitiamo a organizzarvi autonomamente oppure ad aggiornare i calendari e rip
   }
 
   const startISO = chosen.start.toISOString();
+
   const endISO = new Date(chosen.start.getTime() + neededMs).toISOString();
 
   // 7) Crea evento + Meet usando l'account manager
@@ -1533,7 +1534,7 @@ Ciao ${user.nome || "partecipante"},
 abbiamo pianificato la chiamata "${call.titolo}".
 
 Dettagli:
-- Quando: ${new Date(startISO).toLocaleString()}
+- Quando: ${new Date(startISO).toLocaleString()} (UTC)
 - Durata: ${call.durata} minuti
 - Link Meet: ${meeting.meetLink || "verrà condiviso a breve"}
 
@@ -1568,7 +1569,7 @@ A presto!
             <td style="padding:6px 0;color:#6b7280;width:40%;">Quando:</td>
             <td style="padding:6px 0;color:#111827;">${new Date(
               startISO
-            ).toLocaleString()}</td>
+            ).toLocaleString()} (UTC)</td>
           </tr>
           <tr>
             <td style="padding:6px 0;color:#6b7280;">Durata:</td>
