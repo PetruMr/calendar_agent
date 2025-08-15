@@ -62,6 +62,8 @@ function formatDate(iso?: string | null) {
   if (!iso) return "—";
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "—";
+  // Give current offset from UST
+  // d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); // aggiusta per il fuso orario locale
   return d.toLocaleString(undefined, {
     year: "numeric",
     month: "short",
@@ -77,6 +79,8 @@ function toISOFromLocal(dtLocal: string) {
   const [y, m, d] = date.split("-").map(Number);
   const [hh = 0 as any, mm = 0 as any] = (time ?? "0:0").split(":" as any).map(Number);
   const local = new Date(y, (m || 1) - 1, d || 1, hh || 0, mm || 0, 0, 0);
+  // Converti in ISO string
+  // local.setMinutes(local.getMinutes() - local.getTimezoneOffset()); // aggiusta per il fuso orario locale
   return local.toISOString();
 }
 
@@ -179,6 +183,8 @@ export default function AvailabilityPage() {
       return;
     }
     const iso = toISOFromLocal(newStartLocal);
+    console.log(iso)
+
     setMyAvailabilities((prev) => [...prev, { isotime: iso, durata: Number(newDuration) }]);
     // reset campi
     setNewStartLocal("");

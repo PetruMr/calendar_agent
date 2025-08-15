@@ -118,7 +118,7 @@ async function getAvailabilityDTOs(callId: number, userId: number): Promise<Avai
 
   if (error) throw error;
   return (data || []).map((it) => ({
-    isotime: new Date(it.inizio).toISOString(),
+    isotime: it.inizio,
     durata: it.durata_minuti,
   }));
 }
@@ -276,7 +276,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ toke
 
     // Inserimento delle disponibilità
     const rows = list.map((it) => ({
-      inizio: new Date(it.isotime).toISOString(),
+      inizio: it.isotime,
       durata_minuti: Math.round(it.durata),
       call_id: uc.call_id,
       user_id: uc.user_id,
