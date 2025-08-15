@@ -1519,7 +1519,9 @@ Vi invitiamo a organizzarvi autonomamente oppure ad aggiornare i calendari e rip
   for (const p of participants) {
     const user = p.user!;
     const modificaDisponibilitaUrl = p.token
-      ? `http://localhost:3000/availability/${encodeURIComponent(p.token)}`
+      ? (process.env.NEXT_PUBLIC_APP_URL ||
+        process.env.APP_URL ||
+        "http://localhost:3000") + `availability/${encodeURIComponent(p.token)}`
       : null;
 
     const textEmailContent = `
