@@ -332,7 +332,9 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
     // Aggiorna lo stato della call
     const { error: upCallErr } = await supabase
       .from("calls")
-      .update({ stato_avanzamento: "canceled" })
+      .update({ stato_avanzamento: "canceled",
+        data_call: null,
+        link_meet: null })
       .eq("id", uc.call_id);
     if (upCallErr) throw upCallErr;
 
