@@ -839,19 +839,22 @@ export async function agent_CallCreation_EntryPoint(callId: string) {
 
   // Se call scheduled già passata, allora imposta lo stato a "ended"
   if (
-    call.stato_avanzamento === "scheduled" &&
-    call.data_call &&
-    new Date(call.data_call) < new Date()
+    call.stato_avanzamento === "scheduled"
   ) {
-    const { error: updateError } = await supabase
-      .from("calls")
-      .update({ stato_avanzamento: "ended" })
-      .eq("id", callId);
-    if (updateError) {
-      console.error("Errore aggiornamento stato a 'ended':", updateError);
-      return;
+    if (
+      call.data_call &&
+      new Date(call.data_call) < new Date()) 
+    {
+      const { error: updateError } = await supabase
+        .from("calls")
+        .update({ stato_avanzamento: "ended" })
+        .eq("id", callId);
+      if (updateError) {
+        console.error("Errore aggiornamento stato a 'ended':", updateError);
+        return;
+      }
+      console.log(`Chiamata ${callId} terminata per data passata.`);
     }
-    console.log(`Chiamata ${callId} terminata per data passata.`);
     return;
   }
 
@@ -1521,7 +1524,7 @@ Vi invitiamo a organizzarvi autonomamente oppure ad aggiornare i calendari e rip
     const modificaDisponibilitaUrl = p.token
       ? (process.env.NEXT_PUBLIC_APP_URL ||
         process.env.APP_URL ||
-        "http://localhost:3000") + `availability/${encodeURIComponent(p.token)}`
+        "http://localhost:3000") + `/availability/${encodeURIComponent(p.token)}`
       : null;
 
     const textEmailContent = `
